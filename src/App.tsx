@@ -1,24 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useMemo, useState } from "react";
+import StartButton from "./components/StartButton";
+import TempoSlider from "./components/TempoSlider";
+import { Metronome, Ticker } from "./lib/metronome";
+import "./styles/App.module.scss";
+import styles from "./styles/App.module.scss";
 
 function App() {
+  const [ticker] = useState(useMemo(() => new Ticker(), []));
+  const [metronome] = useState(useMemo(() => new Metronome(), []));
+  const [playing, setPlaying] = useState(false);
+  const [tempo, setTempo] = useState(60);
+
+  const handleTogglePlaying = useCallback(async () => {
+    if (!metronome.playing) {
+      await metronome.start();
+      setPlaying(true);
+    } else {
+      await metronome.stop();
+      setPlaying(false);
+    }
+  }, [metronome, playing]);
+  const handleTempoChange = useCallback(
+    (tempo: number) => {
+      setTempo(tempo);
+      ticker.play();
+      metronome.setTempo(tempo);
+    },
+    [tempo]
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={styles.App}>
+      <div />
+      <StartButton
+        tempo={metronome.tempo}
+        onClick={handleTogglePlaying}
+        playing={playing}
+      />
+      <div />
+      <TempoSlider onUpdateTempo={handleTempoChange} tempo={tempo} />
+      <div />
     </div>
   );
 }

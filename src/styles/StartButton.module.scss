@@ -1,0 +1,13 @@
+@import "./common";
+
+.StartButton {
+  font-size: 5rem;
+  width: 10rem;
+  height: 10rem;
+  color: black;
+  border-radius: 50%;
+}
+
+.StartButton.play {
+  background-color: $green;
+}
