@@ -19,14 +19,14 @@ function App() {
       await metronome.stop();
       setPlaying(false);
     }
-  }, [metronome, playing]);
+  }, [metronome]);
   const handleTempoChange = useCallback(
     (tempo: number) => {
       setTempo(tempo);
       ticker.play();
       metronome.setTempo(tempo);
     },
-    [tempo]
+    [metronome, ticker]
   );
 
   return (

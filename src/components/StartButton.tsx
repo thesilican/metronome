@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import styles from "../styles/StartButton.module.scss";
 import cn from "classnames";
+import React, { useEffect, useRef } from "react";
+import styles from "../styles/StartButton.module.scss";
 
 type StartButtonProps = {
   tempo: number;
