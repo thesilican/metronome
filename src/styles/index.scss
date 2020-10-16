@@ -1,7 +1,12 @@
-@import "../../node_modules/bootstrap/scss/bootstrap-reboot.scss";
+@import "./common";
+@import "../../node_modules/normalize.css/normalize.css";
 
 html,
 body,
 #root {
   height: 100vh;
+}
+
+body {
+  font-family: $font-family;
 }

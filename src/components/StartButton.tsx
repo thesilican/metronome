@@ -3,38 +3,40 @@ import React, { useEffect, useRef } from "react";
 import styles from "../styles/StartButton.module.scss";
 
 type StartButtonProps = {
+  onTogglePlaying: () => void;
+  bigNumber: boolean;
   tempo: number;
   playing: boolean;
-  onClick: () => void;
 };
 
 export default function StartButton(props: StartButtonProps) {
-  const buttonRef = useRef(null as HTMLButtonElement | null);
-  const { onClick } = props;
+  const buttonRef = useRef(null as HTMLDivElement | null);
+  const { onTogglePlaying } = props;
 
   useEffect(() => {
     const button = buttonRef.current;
     const onKeyDown = (e: KeyboardEvent) => {
-      button?.blur();
       if (e.code === "Space") {
-        onClick();
+        button?.blur();
       }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [onClick]);
+  }, [onTogglePlaying]);
 
   return (
     <div>
-      <button
+      <div
         ref={buttonRef}
         className={cn(styles.StartButton, { [styles.play]: props.playing })}
-        onClick={props.onClick}
+        onClick={onTogglePlaying}
       >
-        {props.tempo}
-      </button>
+        <span className={cn(styles.label, { [styles.large]: props.bigNumber })}>
+          {props.tempo}
+        </span>
+      </div>
     </div>
   );
 }

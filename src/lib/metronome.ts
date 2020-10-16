@@ -1,8 +1,5 @@
 import { noop } from "../util";
-
-const clickSound = `${process.env.PUBLIC_URL}/assets/click.mp3`;
-// const bruhSound = `${process.env.PUBLIC_URL}/assets/bruh.mp3`;
-const metronomeSound = clickSound;
+import { tickSound } from "./assets";
 
 // https://glitch.com/edit/#!/metronomes
 export class Metronome {
@@ -29,11 +26,12 @@ export class Metronome {
     this.scheduledBuffers = new Map();
   }
   async initAudio() {
+    if (this.initialized) return;
     this.audioCtx = new window.AudioContext();
 
     // Buffer
     this.buffer = await this.audioCtx.decodeAudioData(
-      await (await fetch(metronomeSound)).arrayBuffer()
+      await (await fetch(tickSound)).arrayBuffer()
     );
 
     // Gain
@@ -115,7 +113,7 @@ export class Ticker {
 
     // Buffer
     this.buffer = await this.audioCtx.decodeAudioData(
-      await (await fetch(metronomeSound)).arrayBuffer()
+      await (await fetch(tickSound)).arrayBuffer()
     );
 
     // Gain
