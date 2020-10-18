@@ -5,6 +5,7 @@ import StartButton from "./components/StartButton";
 import TempoSlider from "./components/TempoSlider";
 import TempoTypingListener from "./components/TempoTypingListener";
 import TickerUnsticker from "./components/TickerUnsticker";
+import TunerDropdown from "./components/TunerDropdown";
 import WheelListener from "./components/WheelListener";
 import { Metronome, Ticker } from "./lib/metronome";
 import styles from "./styles/App.module.scss";
@@ -35,6 +36,9 @@ export default function App() {
   const handleTogglePlaying = () => {
     setPlaying((playing) => !playing);
   };
+  const handleStopPlaying = () => {
+    setPlaying(false);
+  };
   const handleTempoChange = (tempo: number) => {
     setPreviewTempo(tempo);
   };
@@ -47,7 +51,9 @@ export default function App() {
 
   return (
     <div className={styles.App}>
-      <div />
+      <div>
+        <TunerDropdown onStopMetronome={handleStopPlaying} />
+      </div>
       <StartButton
         tempo={tempo}
         previewTempo={previewTempo}

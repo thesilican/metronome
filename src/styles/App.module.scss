@@ -1,6 +1,8 @@
 @import "./common";
 
 .App {
+  position: relative;
+  overflow: hidden;
   height: 100%;
   // Small
   @media (max-width: 575.98px) {
