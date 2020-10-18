@@ -1,3 +1,4 @@
+import { EventHandler } from "react";
 import { noop } from "../util";
 import { tickSound } from "./assets";
 
@@ -12,6 +13,8 @@ export class Metronome {
   private buffer: AudioBuffer | null;
   private gain: GainNode | null;
   private scheduledBuffers: Map<number, AudioBufferSourceNode>;
+  private scheduledTimeouts: Map<number, NodeJS.Timeout>;
+  private tickEventListener: EventTarget;
 
   constructor(tempo = 60) {
     this.tempo = tempo;
@@ -24,6 +27,8 @@ export class Metronome {
     this.interval = null;
     this.nextTick = 0;
     this.scheduledBuffers = new Map();
+    this.scheduledTimeouts = new Map();
+    this.tickEventListener = new EventTarget();
   }
   async initAudio() {
     if (this.initialized) return;
@@ -57,8 +62,16 @@ export class Metronome {
     source.buffer = this.buffer!;
     source.connect(this.gain!);
     source.start(time);
-    this.scheduledBuffers!.set(time, source);
     source.onended = () => this.scheduledBuffers.delete(time);
+
+    const diff = time - this.audioCtx!.currentTime;
+    const timeout = setTimeout(() => {
+      this.tickEventListener.dispatchEvent(new Event("tick"));
+      this.scheduledTimeouts.delete(time);
+    }, diff * 1000);
+
+    this.scheduledBuffers.set(time, source);
+    this.scheduledTimeouts.set(time, timeout);
   }
   private clearScheduled() {
     for (const [time, source] of this.scheduledBuffers.entries()) {
@@ -66,6 +79,10 @@ export class Metronome {
       source.onended = noop;
     }
     this.scheduledBuffers.clear();
+    for (const timeout of this.scheduledTimeouts.values()) {
+      clearTimeout(timeout);
+    }
+    this.scheduledTimeouts.clear();
   }
   async start() {
     if (!this.initialized) await this.initAudio();
@@ -91,6 +108,12 @@ export class Metronome {
       this.stop();
       this.start();
     }
+  }
+  addEventListener(type: "tick", callback: () => void) {
+    this.tickEventListener.addEventListener(type, callback);
+  }
+  removeEventListener(type: "tick", callback: () => void) {
+    this.tickEventListener.removeEventListener(type, callback);
   }
 }
 

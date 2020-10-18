@@ -1,14 +1,12 @@
-$white: #fff !default;
-$gray-100: #f8f9fa !default;
-$gray-200: #e9ecef !default;
-$gray-300: #dee2e6 !default;
-$gray-400: #ced4da !default;
-$gray-500: #adb5bd !default;
-$gray-600: #6c757d !default;
-$gray-700: #495057 !default;
-$gray-800: #343a40 !default;
-$gray-900: #212529 !default;
-$black: #000 !default;
+$black: #282c34;
+$white: #abb2bf;
+$green: #98c379;
+
+$background: $black;
+$button-text: $black;
+$button-pause-border: #ffffff;
+$button-pause: #ffffff;
+$button-play: #7a4646;
 
 $font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
   "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;

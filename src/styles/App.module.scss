@@ -1,5 +1,18 @@
+@import "./common";
+
 .App {
   height: 100%;
+  // Small
+  @media (max-width: 575.98px) {
+    width: 100%;
+  }
+  // Large
+  @media (min-width: 576px) {
+    width: 576px;
+    margin: auto;
+  }
+
+  background-color: $background;
 
   display: grid;
   grid-template-rows: 1fr auto 2rem auto 1fr;

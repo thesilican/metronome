@@ -1,7 +1,3 @@
-// A random collection of functions
-
-import TempoSlider from "./components/TempoSlider";
-
 export const noop = () => {};
 
 export async function sleep(ms: number) {

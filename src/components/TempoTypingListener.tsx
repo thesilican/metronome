@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect } from "react";
-import { commonTempos, debounce, range } from "../util";
+import { debounce, range } from "../util";
 
 type TempoTypingListenerProps = {
   previewTempo: number;

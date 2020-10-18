@@ -14,16 +14,9 @@ function App() {
   const [metronome] = useState(useMemo(() => new Metronome(), []));
   const [playing, setPlaying] = useState(false);
   const [tempo, setTempo] = useState(60);
-  const [tempoUpdating, setTempoUpdating] = useState(false);
   const [previewTempo, setPreviewTempo] = useState(-1);
 
   // General
-  const handleStartTempoUpdate = useCallback(() => {
-    setTempoUpdating(true);
-  }, []);
-  const handleFinishTempoUpdate = useCallback(() => {
-    setTempoUpdating(false);
-  }, []);
   const handleTogglePlaying = useCallback(() => {
     setPlaying(!playing);
   }, [playing]);
@@ -31,16 +24,19 @@ function App() {
   // Slider
   const handleSliderTempoChange = useCallback(
     (tempo: number) => {
-      handleStartTempoUpdate();
-      setTempo(tempo);
+      setPlaying(false);
+      setPreviewTempo(tempo);
       ticker.play();
     },
-    [handleStartTempoUpdate, ticker]
+    [ticker]
   );
+  const handleSliderFinishTempoChange = useCallback(() => {
+    setTempo(previewTempo);
+    setPreviewTempo(-1);
+  }, [previewTempo]);
 
   // Tempo Typing Listener
   const handleUpdateTypingTempo = useCallback((tempo: number) => {
-    setTempoUpdating(true);
     setPreviewTempo(tempo);
   }, []);
   const handleFinishTypingTempo = useCallback((finalTempo: number) => {
@@ -48,51 +44,9 @@ function App() {
       Math.min(finalTempo, Math.max(...commonTempos)),
       Math.min(...commonTempos)
     );
-    setTempoUpdating(false);
     setTempo(restrictedTempo);
     setPreviewTempo(-1);
   }, []);
-
-  // Basically init audio whenever possible
-  // useEffect(() => {
-  //   const events = ["click", "keydown", "wheel"];
-  //   const initAudio = () => {
-  //     metronome.initAudio();
-  //     ticker.initAudio();
-  //     events.forEach((evt) => window.removeEventListener(evt, initAudio));
-  //   };
-  //   events.forEach((evt) => window.addEventListener(evt, initAudio));
-  //   return () => {
-  //     events.forEach((evt) => window.removeEventListener(evt, initAudio));
-  //   };
-  // }, [metronome, ticker]);
-
-  // Keypress tempos
-  // const delayFinishTempoUpdate = useCallback(
-  //   debounce((tempo: number) => {
-  //     setTempoUpdating(false);
-  //     setTempo(tempo);
-  //     setPreviewTempo(0);
-  //   }, 500),
-  //   []
-  // );
-  // const validKeys = useMemo(() => range(0, 10).map((x) => x.toString()), []);
-  // useEffect(() => {
-  //   const onKeypress = (evt: KeyboardEvent) => {
-  //     if (previewTempo > 100) return;
-  //     if (validKeys.includes(evt.key)) {
-  //       setTempoUpdating(true);
-  //       const num = parseInt(evt.key, 10);
-  //       const newTempo = previewTempo * 10 + num;
-  //       setPreviewTempo(previewTempo * 10 + num);
-  //       delayFinishTempoUpdate(newTempo);
-  //     }
-  //   };
-  //   window.addEventListener("keydown", onKeypress);
-  //   return () => {
-  //     window.removeEventListener("keydown", onKeypress);
-  //   };
-  // }, [delayFinishTempoUpdate, previewTempo, validKeys]);
 
   // Set metronome and tempo based on result
   useEffect(() => {
@@ -106,6 +60,8 @@ function App() {
     }
   }, [metronome, playing]);
 
+  console.log(tempo, previewTempo);
+
   return (
     <div className={styles.App}>
       <PlayPauseListener onStartStop={handleTogglePlaying} />
@@ -117,7 +73,8 @@ function App() {
       <Prefetch />
       <div />
       <StartButton
-        bigNumber={tempoUpdating}
+        metronome={metronome}
+        isPreviewTempo={previewTempo !== -1}
         tempo={previewTempo === -1 ? tempo : previewTempo}
         playing={playing}
         onTogglePlaying={handleTogglePlaying}
@@ -125,8 +82,9 @@ function App() {
       <div />
       <TempoSlider
         tempo={tempo}
+        previewTempo={previewTempo}
         onUpdateTempo={handleSliderTempoChange}
-        onFinishedUpdatingTempo={handleFinishTempoUpdate}
+        onFinishedUpdatingTempo={handleSliderFinishTempoChange}
       />
       <div />
     </div>

@@ -1,5 +1,5 @@
-import { networkInterfaces } from "os";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import styles from "../styles/TempoSlider.module.scss";
 import {
   closestCommonTempo,
   commonTempos,
@@ -7,16 +7,16 @@ import {
   nextCommonTempoDown,
   nextCommonTempoUp,
 } from "../util";
-import styles from "../styles/TempoSlider.module.scss";
 
 type TempoSliderProps = {
   tempo: number;
+  previewTempo: number;
   onUpdateTempo: (tempo: number) => void;
   onFinishedUpdatingTempo: () => void;
 };
 
 export default function TempoSlider(props: TempoSliderProps) {
-  const { onUpdateTempo, tempo, onFinishedUpdatingTempo } = props;
+  const { onUpdateTempo, tempo, onFinishedUpdatingTempo, previewTempo } = props;
   const [scrollCounter, setScrollCounter] = useState(0);
   const sliderRef = useRef(null as HTMLInputElement | null);
 
@@ -76,7 +76,8 @@ export default function TempoSlider(props: TempoSliderProps) {
     };
   }, [sliderRef]);
 
-  const tempoAdjusted = commonTempos.indexOf(closestCommonTempo(tempo));
+  const curTempo = previewTempo === -1 ? tempo : previewTempo;
+  const tempoAdjusted = commonTempos.indexOf(closestCommonTempo(curTempo));
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTempo = commonTempos[parseInt(e.target.value, 10)];
     onUpdateTempo(newTempo);

@@ -9,17 +9,35 @@
   align-items: center;
   justify-content: center;
 
-  background-color: $gray-700;
-  border-color: $gray-600;
+  background-color: $button-pause-border;
+  border-color: $button-pause;
   border-radius: 50%;
   border-style: solid;
 
   transition: box-shadow 0.1s ease, background-color 0.1s ease;
 }
 
+.StartButton.play {
+  background-color: $button-play;
+  box-shadow: 0px 5px 10px 0px white;
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.StartButton.pulse {
+  animation: grow 0.1s ease;
+}
+
 .label {
   font-size: 5rem;
-  color: white;
+  color: $button-text;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -29,9 +47,4 @@
 
 .label.large {
   font-size: 5.5rem;
-}
-
-.StartButton.play {
-  background-color: scale-color($color: #00ff00, $lightness: -30%);
-  box-shadow: 0px 5px 10px 0px black;
 }
