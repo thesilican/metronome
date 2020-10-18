@@ -1,12 +1,21 @@
-$black: #282c34;
-$white: #abb2bf;
-$green: #98c379;
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
-$background: $black;
-$button-text: $black;
-$button-pause-border: #ffffff;
-$button-pause: #ffffff;
-$button-play: #7a4646;
+$dark: #282c34;
+$grey: #abb2bf;
+$active: #ffffff;
+$inactive: scale-color($grey, $lightness: 60%);
+$green: #4caf50;
 
-$font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+$background: $dark;
+$grey-text: $grey;
+$button-text: $dark;
+$button-pause-border: $inactive;
+$button-pause: $inactive;
+$button-play-border: $active;
+$button-play: $active;
+$button-play-shadow: scale-color($active, $alpha: 0.5);
+$slider-thumb: $green;
+$slider-background: $grey;
+
+$font-family: -apple-system, BlinkMacSystemFont, "Roboto", "Segoe UI", "Oxygen",
   "Ubuntu", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;

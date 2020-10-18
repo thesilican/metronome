@@ -18,7 +18,6 @@ export default function StartButton(props: StartButtonProps) {
 
   useEffect(() => {
     const handler = () => {
-      console.log("Tick");
       setPulse(true);
     };
     metronome.addEventListener("tick", handler);

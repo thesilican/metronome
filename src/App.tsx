@@ -4,6 +4,7 @@ import SpaceKeyListener from "./components/SpaceKeyListener";
 import StartButton from "./components/StartButton";
 import TempoSlider from "./components/TempoSlider";
 import TempoTypingListener from "./components/TempoTypingListener";
+import TickerUnsticker from "./components/TickerUnsticker";
 import WheelListener from "./components/WheelListener";
 import { Metronome, Ticker } from "./lib/metronome";
 import styles from "./styles/App.module.scss";
@@ -14,6 +15,11 @@ export default function App() {
   const [tempo, setTempo] = useState(60);
   const [playing, setPlaying] = useState(false);
   const [previewTempo, setPreviewTempo] = useState(-1);
+
+  useEffect(() => {
+    metronome.initAudio();
+    ticker.initAudio();
+  }, [metronome, ticker]);
 
   useEffect(() => {
     metronome.setTempo(tempo);
@@ -76,6 +82,7 @@ export default function App() {
         onTempoChange={handleTempoChange}
         onFinishTempoChange={handleFinishTempoChange}
       />
+      <TickerUnsticker ticker={ticker} />
     </div>
   );
 }

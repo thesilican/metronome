@@ -132,6 +132,7 @@ export class Ticker {
   }
 
   async initAudio() {
+    if (this.initialized) return;
     this.audioCtx = new window.AudioContext();
 
     // Buffer
@@ -147,15 +148,22 @@ export class Ticker {
     this.initialized = true;
   }
 
-  private async unblockAudio() {
-    if (this.audioCtx!.state === "suspended") {
+  isStuck() {
+    return this.audioCtx?.state !== "running";
+  }
+
+  async unstickAudio() {
+    if (this.isStuck()) {
       await this.audioCtx!.resume();
     }
   }
 
   async play() {
     if (!this.initialized) await this.initAudio();
-    await this.unblockAudio();
+    // Try to unstick
+    this.unstickAudio();
+    // Don't play if suspended
+    if (this.audioCtx?.state === "suspended") return;
     const source = this.audioCtx!.createBufferSource();
     source.buffer = this.buffer!;
     source.connect(this.gain!);

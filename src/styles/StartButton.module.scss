@@ -1,16 +1,15 @@
-@use "sass:color";
 @import "./common";
 
 .StartButton {
-  width: 10rem;
-  height: 10rem;
+  width: 15rem;
+  height: 15rem;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background-color: $button-pause-border;
-  border-color: $button-pause;
+  background-color: $button-pause;
+  border-color: $button-pause-border;
   border-radius: 50%;
   border-style: solid;
 
@@ -19,7 +18,8 @@
 
 .StartButton.play {
   background-color: $button-play;
-  box-shadow: 0px 5px 10px 0px white;
+  border-color: $button-play-border;
+  box-shadow: 0px 1px 15px 0px $button-play-shadow;
 }
 
 @keyframes grow {
@@ -36,7 +36,7 @@
 }
 
 .label {
-  font-size: 5rem;
+  font-size: 7rem;
   color: $button-text;
   user-select: none;
   -moz-user-select: none;
@@ -46,5 +46,5 @@
 }
 
 .label.large {
-  font-size: 5.5rem;
+  // font-size: 8rem;
 }

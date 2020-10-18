@@ -43,7 +43,7 @@ export default function TempoSlider(props: TempoSliderProps) {
   };
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <input
         className={styles.slider}
         ref={sliderRef}

@@ -1,6 +1,6 @@
 {
-  "short_name": "Metronome",
-  "name": "Metronome App",
+  "short_name": "Metronome/Tuner",
+  "name": "Metronome and Tuner",
   "icons": [
     {
       "src": "favicon.ico",

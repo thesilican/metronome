@@ -1,18 +1,30 @@
-.slider {
-  -webkit-appearance: none;
+@import "./common";
+
+.wrapper {
   width: 100%;
+  display: flex;
+}
+
+.slider {
+  flex-grow: 1;
+  margin-left: 2rem;
+  margin-right: 2rem;
   height: 1rem;
-  border-radius: 5px;
-  background: #d3d3d3;
+
+  border-radius: 1rem;
+  background: $slider-background;
   outline: none;
   opacity: 0.7;
   -webkit-transition: 0.2s;
   transition: opacity 0.2s;
+  -webkit-appearance: none;
 }
+
+// Thumb
 
 @mixin range-thumb {
   cursor: pointer;
-  background: #4caf50;
+  background: $slider-thumb;
   border-radius: 50%;
   width: 3rem;
   height: 3rem;
