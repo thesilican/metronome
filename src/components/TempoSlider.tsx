@@ -1,87 +1,45 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef } from "react";
+import { useDebouncedCallback } from "use-debounce/lib";
+import { Ticker } from "../lib/metronome";
 import styles from "../styles/TempoSlider.module.scss";
-import {
-  closestCommonTempo,
-  commonTempos,
-  debounce,
-  nextCommonTempoDown,
-  nextCommonTempoUp,
-} from "../util";
+import { closestCommonTempo, commonTempos } from "../util";
 
 type TempoSliderProps = {
   tempo: number;
   previewTempo: number;
-  onUpdateTempo: (tempo: number) => void;
-  onFinishedUpdatingTempo: () => void;
+  ticker: Ticker;
+  onTempoChange: (tempo: number) => void;
+  onFinishTempoChange: () => void;
 };
 
 export default function TempoSlider(props: TempoSliderProps) {
-  const { onUpdateTempo, tempo, onFinishedUpdatingTempo, previewTempo } = props;
-  const [scrollCounter, setScrollCounter] = useState(0);
+  const {
+    tempo,
+    previewTempo,
+    ticker,
+    onTempoChange,
+    onFinishTempoChange,
+  } = props;
   const sliderRef = useRef(null as HTMLInputElement | null);
 
-  // For accelerated scrolling
-  const resetScrollCounter = useCallback(
-    debounce(() => {
-      setScrollCounter(0);
-    }, 125),
-    []
-  );
-  const finishUpdatingTempo = useCallback(
-    debounce(() => {
-      onFinishedUpdatingTempo();
-    }, 200),
-    [onFinishedUpdatingTempo]
+  const handleTempoChange = useCallback(
+    (tempo: number) => {
+      ticker.play();
+      onTempoChange(tempo);
+    },
+    [onTempoChange, ticker]
   );
 
-  // Handle scroll wheeling
-  // Including accelerated scrolling
-  useEffect(() => {
-    const slider = sliderRef.current;
-    if (!slider) return;
-    const wheel = (e: WheelEvent) => {
-      const nextFunc = e.deltaY > 0 ? nextCommonTempoUp : nextCommonTempoDown;
-      let newTempo = tempo;
-      newTempo = nextFunc(newTempo);
-      if (scrollCounter > 2) {
-        newTempo = nextFunc(newTempo);
-        newTempo = nextFunc(newTempo);
-      }
-      setScrollCounter(scrollCounter + 1);
-      onUpdateTempo(newTempo);
-      resetScrollCounter();
-      finishUpdatingTempo();
-    };
-    document.addEventListener("wheel", wheel);
-    return () => document.removeEventListener("wheel", wheel);
-  }, [
-    sliderRef,
-    tempo,
-    onUpdateTempo,
-    scrollCounter,
-    resetScrollCounter,
-    finishUpdatingTempo,
-  ]);
+  const delayedFinishUpdatingTempo = useDebouncedCallback(() => {
+    onFinishTempoChange();
+  }, 200);
 
-  useEffect(() => {
-    const slider = sliderRef.current;
-    const blur = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        slider?.blur();
-      }
-    };
-    document.addEventListener("keydown", blur);
-    return () => {
-      document.removeEventListener("keydown", blur);
-    };
-  }, [sliderRef]);
-
-  const curTempo = previewTempo === -1 ? tempo : previewTempo;
-  const tempoAdjusted = commonTempos.indexOf(closestCommonTempo(curTempo));
+  const displayTempo = previewTempo === -1 ? tempo : previewTempo;
+  const tempoAdjusted = commonTempos.indexOf(closestCommonTempo(displayTempo));
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTempo = commonTempos[parseInt(e.target.value, 10)];
-    onUpdateTempo(newTempo);
-    finishUpdatingTempo();
+    handleTempoChange(newTempo);
+    delayedFinishUpdatingTempo.callback();
   };
 
   return (

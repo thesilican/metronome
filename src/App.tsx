@@ -1,94 +1,81 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import PlayPauseListener from "./components/PlayPauseListener";
+import React, { useEffect, useState } from "react";
+import ArrowKeyListener from "./components/ArrowKeyListener";
+import SpaceKeyListener from "./components/SpaceKeyListener";
 import StartButton from "./components/StartButton";
 import TempoSlider from "./components/TempoSlider";
 import TempoTypingListener from "./components/TempoTypingListener";
-import { Prefetch } from "./lib/assets";
+import WheelListener from "./components/WheelListener";
 import { Metronome, Ticker } from "./lib/metronome";
-import "./styles/App.module.scss";
 import styles from "./styles/App.module.scss";
-import { closestCommonTempo, commonTempos } from "./util";
 
-function App() {
-  const [ticker] = useState(useMemo(() => new Ticker(), []));
-  const [metronome] = useState(useMemo(() => new Metronome(), []));
-  const [playing, setPlaying] = useState(false);
+export default function App() {
+  const [metronome] = useState(() => new Metronome());
+  const [ticker] = useState(() => new Ticker());
   const [tempo, setTempo] = useState(60);
+  const [playing, setPlaying] = useState(false);
   const [previewTempo, setPreviewTempo] = useState(-1);
 
-  // General
-  const handleTogglePlaying = useCallback(() => {
-    setPlaying(!playing);
-  }, [playing]);
-
-  // Slider
-  const handleSliderTempoChange = useCallback(
-    (tempo: number) => {
-      setPlaying(false);
-      setPreviewTempo(tempo);
-      ticker.play();
-    },
-    [ticker]
-  );
-  const handleSliderFinishTempoChange = useCallback(() => {
-    setTempo(previewTempo);
-    setPreviewTempo(-1);
-  }, [previewTempo]);
-
-  // Tempo Typing Listener
-  const handleUpdateTypingTempo = useCallback((tempo: number) => {
-    setPreviewTempo(tempo);
-  }, []);
-  const handleFinishTypingTempo = useCallback((finalTempo: number) => {
-    const restrictedTempo = Math.max(
-      Math.min(finalTempo, Math.max(...commonTempos)),
-      Math.min(...commonTempos)
-    );
-    setTempo(restrictedTempo);
-    setPreviewTempo(-1);
-  }, []);
-
-  // Set metronome and tempo based on result
   useEffect(() => {
     metronome.setTempo(tempo);
   }, [metronome, tempo]);
   useEffect(() => {
-    if (playing) {
+    if (playing && previewTempo === -1) {
       metronome.start();
     } else {
       metronome.stop();
     }
-  }, [metronome, playing]);
+  }, [metronome, playing, previewTempo]);
 
-  console.log(tempo, previewTempo);
+  const handleTogglePlaying = () => {
+    setPlaying((playing) => !playing);
+  };
+  const handleTempoChange = (tempo: number) => {
+    setPreviewTempo(tempo);
+  };
+  const handleFinishTempoChange = () => {
+    // Slightly sanitize
+    const newTempo = Math.max(1, previewTempo);
+    setTempo(newTempo);
+    setPreviewTempo(-1);
+  };
 
   return (
     <div className={styles.App}>
-      <PlayPauseListener onStartStop={handleTogglePlaying} />
-      <TempoTypingListener
-        previewTempo={previewTempo}
-        onFinishTempoUpdating={handleFinishTypingTempo}
-        onUpdateTempo={handleUpdateTypingTempo}
-      />
-      <Prefetch />
       <div />
       <StartButton
-        metronome={metronome}
-        isPreviewTempo={previewTempo !== -1}
-        tempo={previewTempo === -1 ? tempo : previewTempo}
+        tempo={tempo}
+        previewTempo={previewTempo}
         playing={playing}
         onTogglePlaying={handleTogglePlaying}
+        metronome={metronome}
       />
-      <div />
       <TempoSlider
         tempo={tempo}
         previewTempo={previewTempo}
-        onUpdateTempo={handleSliderTempoChange}
-        onFinishedUpdatingTempo={handleSliderFinishTempoChange}
+        ticker={ticker}
+        onTempoChange={handleTempoChange}
+        onFinishTempoChange={handleFinishTempoChange}
       />
-      <div />
+      <WheelListener
+        ticker={ticker}
+        tempo={tempo}
+        previewTempo={previewTempo}
+        onTempoChange={handleTempoChange}
+        onFinishTempoChange={handleFinishTempoChange}
+      />
+      <SpaceKeyListener onStartStop={handleTogglePlaying} />
+      <TempoTypingListener
+        previewTempo={previewTempo}
+        onTempoChange={handleTempoChange}
+        onFinishTempoChange={handleFinishTempoChange}
+      />
+      <ArrowKeyListener
+        ticker={ticker}
+        tempo={tempo}
+        previewTempo={previewTempo}
+        onTempoChange={handleTempoChange}
+        onFinishTempoChange={handleFinishTempoChange}
+      />
     </div>
   );
 }
-
-export default App;

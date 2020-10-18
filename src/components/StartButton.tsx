@@ -1,33 +1,20 @@
-import cn from "classnames";
 import React, { useEffect, useRef, useState } from "react";
-import { Metronome } from "../lib/metronome";
+import cn from "classnames";
 import styles from "../styles/StartButton.module.scss";
+import { Metronome } from "../lib/metronome";
 
 type StartButtonProps = {
   metronome: Metronome;
-  onTogglePlaying: () => void;
-  isPreviewTempo: boolean;
-  tempo: number;
   playing: boolean;
+  tempo: number;
+  previewTempo: number;
+  onTogglePlaying: () => void;
 };
 
 export default function StartButton(props: StartButtonProps) {
-  const { onTogglePlaying, metronome } = props;
+  const { playing, tempo, onTogglePlaying, metronome, previewTempo } = props;
   const buttonRef = useRef(null as HTMLDivElement | null);
   const [pulse, setPulse] = useState(false);
-
-  useEffect(() => {
-    const button = buttonRef.current;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
-        button?.blur();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onTogglePlaying]);
 
   useEffect(() => {
     const handler = () => {
@@ -44,22 +31,21 @@ export default function StartButton(props: StartButtonProps) {
     }
   }, [pulse]);
 
-  console.log(props.isPreviewTempo);
+  const isPreviewTempo = previewTempo !== -1;
+  const displayTempo = isPreviewTempo ? previewTempo : tempo;
 
   return (
     <div>
       <div
         ref={buttonRef}
         className={cn(styles.StartButton, {
-          [styles.play]: props.playing,
-          [styles.pulse]: pulse && !props.isPreviewTempo,
+          [styles.play]: playing,
+          [styles.pulse]: pulse && !isPreviewTempo,
         })}
         onClick={onTogglePlaying}
       >
-        <span
-          className={cn(styles.label, { [styles.large]: props.isPreviewTempo })}
-        >
-          {props.tempo}
+        <span className={cn(styles.label, { [styles.large]: isPreviewTempo })}>
+          {displayTempo}
         </span>
       </div>
     </div>

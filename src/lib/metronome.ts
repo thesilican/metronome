@@ -1,4 +1,3 @@
-import { EventHandler } from "react";
 import { noop } from "../util";
 import { tickSound } from "./assets";
 
@@ -87,8 +86,9 @@ export class Metronome {
   async start() {
     if (!this.initialized) await this.initAudio();
     this.playing = true;
+    // Start first tick after 0.5 second
     this.nextTick = this.audioCtx!.currentTime;
-    // Start immediately
+
     this.tick();
     this.interval = setInterval(this.tick.bind(this), 1000);
   }
@@ -147,8 +147,15 @@ export class Ticker {
     this.initialized = true;
   }
 
+  private async unblockAudio() {
+    if (this.audioCtx!.state === "suspended") {
+      await this.audioCtx!.resume();
+    }
+  }
+
   async play() {
     if (!this.initialized) await this.initAudio();
+    await this.unblockAudio();
     const source = this.audioCtx!.createBufferSource();
     source.buffer = this.buffer!;
     source.connect(this.gain!);

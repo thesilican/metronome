@@ -1,10 +1,10 @@
 import React, { Fragment, useEffect } from "react";
 
-type PlayPauseListenerProps = {
+type SpaceKeyListenerProps = {
   onStartStop: () => void;
 };
 
-export default function PlayPauseListener(props: PlayPauseListenerProps) {
+export default function SpaceKeyListener(props: SpaceKeyListenerProps) {
   const { onStartStop } = props;
   useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
