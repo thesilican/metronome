@@ -15,6 +15,10 @@
   transform: translateY(calc(-100% + 6rem));
 }
 
+.wrapper.hidden:hover {
+  transform: translateY(calc(-100% + 6rem + 0.5rem));
+}
+
 .tray {
   margin: 2rem;
   width: calc(100% - 4rem);
@@ -34,6 +38,10 @@
   grid-template-columns: 4rem 1fr 4rem;
   justify-items: center;
   align-items: center;
+
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 .label {
