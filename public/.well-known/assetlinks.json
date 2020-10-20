@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.thesilican.metronome.twa",
+      "sha256_cert_fingerprints": [
+        "11:7F:01:C2:F4:8E:9D:C2:8A:55:AC:86:2E:7D:16:55:D5:95:49:13:71:1A:B1:BD:9B:72:45:C6:FF:03:79:04"
+      ]
+    }
+  }
+]

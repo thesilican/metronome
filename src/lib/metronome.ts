@@ -1,5 +1,5 @@
 import { noop } from "../util";
-import { tickSound } from "./assets";
+import { clickSound } from "./assets";
 
 // https://glitch.com/edit/#!/metronomes
 export class Metronome {
@@ -35,7 +35,7 @@ export class Metronome {
 
     // Buffer
     this.buffer = await this.audioCtx.decodeAudioData(
-      await (await fetch(tickSound)).arrayBuffer()
+      await (await fetch(clickSound)).arrayBuffer()
     );
 
     // Gain
@@ -137,7 +137,7 @@ export class Ticker {
 
     // Buffer
     this.buffer = await this.audioCtx.decodeAudioData(
-      await (await fetch(tickSound)).arrayBuffer()
+      await (await fetch(clickSound)).arrayBuffer()
     );
 
     // Gain
