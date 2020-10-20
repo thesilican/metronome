@@ -40,31 +40,31 @@
   grid-column: 1 / span 2;
   grid-row: 1;
 
-  background-color: $green;
+  background-color: $blue;
   border-top-left-radius: 2rem;
   border-top-right-radius: 2rem;
-  border-bottom-right-radius: 2rem;
+  border-bottom-left-radius: 2rem;
 
   padding: 1rem 2rem;
 }
 
 .showHide {
   margin-top: -1px;
-  margin-right: 0.5rem;
+  margin-left: 0.5rem;
   pointer-events: painted;
 
-  grid-column: 1;
+  grid-column: 2;
   grid-row: 2;
 
   border-bottom-left-radius: 2rem;
   border-bottom-right-radius: 2rem;
 
-  border-top: 2px solid $green;
+  border-top: 2px solid $blue;
 
   padding-left: 1rem;
   padding-right: 1rem;
 
-  background-color: $green;
+  background-color: $blue;
 
   user-select: none;
   -moz-user-select: none;

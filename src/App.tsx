@@ -1,5 +1,7 @@
+import cn from "classnames";
 import React, { useEffect, useState } from "react";
 import ArrowKeyListener from "./components/ArrowKeyListener";
+import SettingsDropdown from "./components/SettingsDropdown";
 import SpaceKeyListener from "./components/SpaceKeyListener";
 import StartButton from "./components/StartButton";
 import TempoSlider from "./components/TempoSlider";
@@ -9,6 +11,7 @@ import TunerDropdown from "./components/TunerDropdown";
 import WheelListener from "./components/WheelListener";
 import { Metronome, Ticker } from "./lib/metronome";
 import styles from "./styles/App.module.scss";
+import { maxTempo, minTempo } from "./util";
 
 export default function App() {
   const [metronome] = useState(() => new Metronome());
@@ -16,6 +19,8 @@ export default function App() {
   const [tempo, setTempo] = useState(60);
   const [playing, setPlaying] = useState(false);
   const [previewTempo, setPreviewTempo] = useState(-1);
+  const [tunerShown, setTunerShown] = useState(false);
+  const [settingsShown, setSettingsShown] = useState(false);
 
   useEffect(() => {
     metronome.initAudio();
@@ -36,38 +41,69 @@ export default function App() {
   const handleTogglePlaying = () => {
     setPlaying((playing) => !playing);
   };
-  const handleStopPlaying = () => {
-    setPlaying(false);
-  };
   const handleTempoChange = (tempo: number) => {
     setPreviewTempo(tempo);
   };
   const handleFinishTempoChange = () => {
     // Slightly sanitize
-    const newTempo = Math.max(1, previewTempo);
+    const newTempo = Math.min(Math.max(previewTempo, minTempo), maxTempo);
     setTempo(newTempo);
     setPreviewTempo(-1);
   };
+  const handleToggleTunerShow = () => {
+    if (!settingsShown) {
+      setTunerShown(!tunerShown);
+      setSettingsShown(false);
+    }
+  };
+  const handleToggleSettingsShow = () => {
+    if (!tunerShown) {
+      setSettingsShown(!settingsShown);
+      setTunerShown(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tunerShown || settingsShown) {
+      setPlaying(false);
+    }
+  }, [tunerShown, settingsShown]);
 
   return (
-    <div className={styles.App}>
+    <div className={cn(styles.App)}>
       <div>
-        <TunerDropdown onStopMetronome={handleStopPlaying} />
+        <TunerDropdown
+          shown={tunerShown}
+          invis={settingsShown}
+          onToggleShow={handleToggleTunerShow}
+        />
+        <SettingsDropdown
+          shown={settingsShown}
+          invis={tunerShown}
+          onToggleShow={handleToggleSettingsShow}
+        />
       </div>
-      <StartButton
-        tempo={tempo}
-        previewTempo={previewTempo}
-        playing={playing}
-        onTogglePlaying={handleTogglePlaying}
-        metronome={metronome}
-      />
-      <TempoSlider
-        tempo={tempo}
-        previewTempo={previewTempo}
-        ticker={ticker}
-        onTempoChange={handleTempoChange}
-        onFinishTempoChange={handleFinishTempoChange}
-      />
+      <div
+        className={cn(styles.metronome, {
+          [styles.shrink]: tunerShown || settingsShown,
+        })}
+      >
+        <div />
+        <StartButton
+          tempo={tempo}
+          previewTempo={previewTempo}
+          playing={playing}
+          onTogglePlaying={handleTogglePlaying}
+          metronome={metronome}
+        />
+        <TempoSlider
+          tempo={tempo}
+          previewTempo={previewTempo}
+          ticker={ticker}
+          onTempoChange={handleTempoChange}
+          onFinishTempoChange={handleFinishTempoChange}
+        />
+      </div>
       <WheelListener
         ticker={ticker}
         tempo={tempo}

@@ -5,19 +5,27 @@
   overflow: hidden;
   height: 100%;
   // Small
-  @media (max-width: 575.98px) {
+  @include media-small {
     width: 100%;
   }
   // Large
-  @media (min-width: 576px) {
+  @include media-large {
     width: 576px;
     margin: auto;
   }
+}
 
+.metronome {
+  height: 100%;
+  width: 100%;
   background-color: $background;
 
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
   align-items: center;
   justify-items: center;
+  transition: transform 0.3s ease;
+}
+.metronome.shrink {
+  transform: scale(0.5);
 }

@@ -33,6 +33,8 @@ export function irange(start: number, stop?: number, step = 1): number[] {
 //   ...range(120, 144, 6),
 //   ...irange(144, 208, 8),
 // ];
+export const minTempo = 40;
+export const maxTempo = 400;
 export const commonTempos = irange(40, 200, 5);
 
 export function nextCommonTempoUp(num: number) {
