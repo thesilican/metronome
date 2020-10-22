@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce/lib";
-import { Ticker } from "../lib/metronome";
+import { Ticker } from "../lib/ticker";
 import styles from "../styles/TempoSlider.module.scss";
 import { closestCommonTempo, commonTempos } from "../util";
 

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce/lib";
-import { Ticker } from "../lib/metronome";
+import { Ticker } from "../lib/ticker";
 import { nextCommonTempoDown, nextCommonTempoUp } from "../util";
 
 type ArrowKeyListenerProps = {

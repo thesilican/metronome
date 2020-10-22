@@ -1,26 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { Ticker } from "../lib/metronome";
+import React, { useCallback, useEffect, useState } from "react";
+import { Metronome } from "../lib/metronome";
+import { Ticker } from "../lib/ticker";
 import styles from "../styles/TickerUnsticker.module.scss";
 
 type TickerUnsticker = {
   ticker: Ticker;
+  metronome: Metronome;
 };
 
 export default function TickerUnsticker(props: TickerUnsticker) {
-  const { ticker } = props;
-  const [visible, setVisible] = useState(() => ticker.isStuck());
+  const { ticker, metronome } = props;
+  const [visible, setVisible] = useState(true);
+
+  const initAudio = useCallback(() => {
+    metronome.initAudio();
+    ticker.initAudio();
+  }, [metronome, ticker]);
 
   const handleClick = () => {
-    ticker.unstickAudio();
+    initAudio();
     setVisible(false);
   };
 
   useEffect(() => {
     if (!visible) return;
-    const handler = () => setVisible(false);
+    const handler = () => {
+      initAudio();
+      setVisible(false);
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [visible]);
+  }, [initAudio, visible]);
 
   return !visible ? null : (
     <div onClick={handleClick} className={styles.TickerUnsticker}>

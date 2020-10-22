@@ -9,7 +9,8 @@ import TempoTypingListener from "./components/TempoTypingListener";
 import TickerUnsticker from "./components/TickerUnsticker";
 import TunerDropdown from "./components/TunerDropdown";
 import WheelListener from "./components/WheelListener";
-import { Metronome, Ticker } from "./lib/metronome";
+import { Metronome } from "./lib/metronome";
+import { Ticker } from "./lib/ticker";
 import styles from "./styles/App.module.scss";
 import { maxTempo, minTempo } from "./util";
 
@@ -21,11 +22,6 @@ export default function App() {
   const [previewTempo, setPreviewTempo] = useState(-1);
   const [tunerShown, setTunerShown] = useState(false);
   const [settingsShown, setSettingsShown] = useState(false);
-
-  useEffect(() => {
-    metronome.initAudio();
-    ticker.initAudio();
-  }, [metronome, ticker]);
 
   useEffect(() => {
     metronome.setTempo(tempo);
@@ -71,6 +67,7 @@ export default function App() {
 
   return (
     <div className={cn(styles.App)}>
+      <TickerUnsticker metronome={metronome} ticker={ticker} />
       <div>
         <TunerDropdown
           shown={tunerShown}
@@ -124,7 +121,6 @@ export default function App() {
         onTempoChange={handleTempoChange}
         onFinishTempoChange={handleFinishTempoChange}
       />
-      <TickerUnsticker ticker={ticker} />
     </div>
   );
 }

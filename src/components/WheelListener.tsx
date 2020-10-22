@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useDebouncedCallback } from "use-debounce/lib";
-import { Ticker } from "../lib/metronome";
+import { Ticker } from "../lib/ticker";
 import { nextCommonTempoUp, nextCommonTempoDown } from "../util";
 
 type WheelListenerProps = {

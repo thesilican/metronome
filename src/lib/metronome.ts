@@ -34,9 +34,7 @@ export class Metronome {
     this.audioCtx = new window.AudioContext();
 
     // Buffer
-    this.buffer = await this.audioCtx.decodeAudioData(
-      await (await fetch(clickSound)).arrayBuffer()
-    );
+    this.buffer = await this.audioCtx.decodeAudioData(await clickSound.get());
 
     // Gain
     this.gain = this.audioCtx.createGain();
@@ -114,59 +112,5 @@ export class Metronome {
   }
   removeEventListener(type: "tick", callback: () => void) {
     this.tickEventListener.removeEventListener(type, callback);
-  }
-}
-
-export class Ticker {
-  initialized: boolean;
-  private audioCtx: AudioContext | null;
-  private buffer: AudioBuffer | null;
-  private gain: GainNode | null;
-
-  constructor(tempo = 60) {
-    this.initialized = false;
-
-    this.audioCtx = null;
-    this.buffer = null;
-    this.gain = null;
-  }
-
-  async initAudio() {
-    if (this.initialized) return;
-    this.audioCtx = new window.AudioContext();
-
-    // Buffer
-    this.buffer = await this.audioCtx.decodeAudioData(
-      await (await fetch(clickSound)).arrayBuffer()
-    );
-
-    // Gain
-    this.gain = this.audioCtx.createGain();
-    this.gain.gain.value = 0.1;
-
-    this.gain.connect(this.audioCtx.destination);
-    this.initialized = true;
-  }
-
-  isStuck() {
-    return this.audioCtx?.state !== "running";
-  }
-
-  async unstickAudio() {
-    if (this.isStuck()) {
-      await this.audioCtx!.resume();
-    }
-  }
-
-  async play() {
-    if (!this.initialized) await this.initAudio();
-    // Try to unstick
-    this.unstickAudio();
-    // Don't play if suspended
-    if (this.audioCtx?.state === "suspended") return;
-    const source = this.audioCtx!.createBufferSource();
-    source.buffer = this.buffer!;
-    source.connect(this.gain!);
-    source.start(this.audioCtx!.currentTime);
   }
 }
