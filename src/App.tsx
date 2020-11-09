@@ -60,10 +60,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (tunerShown || settingsShown) {
+    if (tunerShown) {
       setPlaying(false);
     }
-  }, [tunerShown, settingsShown]);
+  }, [tunerShown]);
 
   return (
     <div className={cn(styles.App)}>

@@ -43,6 +43,7 @@ export class Metronome {
     this.gain.connect(this.audioCtx.destination);
     this.initialized = true;
   }
+
   private tick() {
     const curTime = this.audioCtx!.currentTime;
     const secondsPerTick = 60 / this.tempo;
@@ -81,6 +82,7 @@ export class Metronome {
     }
     this.scheduledTimeouts.clear();
   }
+
   async start() {
     if (!this.initialized) await this.initAudio();
     this.playing = true;
