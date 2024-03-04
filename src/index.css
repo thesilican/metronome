@@ -1,0 +1,142 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+:root {
+  --background: #fff;
+  --start-stop-text: #000;
+  --start-stop-bg: #dee2e6;
+  --tempo-value-outline: #0d6efd;
+  --tempo-value-text: #000;
+  --tempo-slider-bg: #ced4da;
+  --tempo-slider-thumb: #0d6efd;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #212529;
+    --start-stop-text: #fff;
+    --start-stop-bg: #6c757d;
+    --tempo-value-outline: #fff;
+    --tempo-value-text: #fff;
+    --tempo-slider-bg: #6c757d;
+    --tempo-slider-thumb: #3d8bfd;
+  }
+}
+
+body {
+  background-color: var(--background);
+}
+
+.app {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 120px;
+}
+
+.start-stop {
+  width: 240px;
+  height: 240px;
+  font-size: 72px;
+  border-radius: 50%;
+  border: none;
+  appearance: none;
+  background-color: var(--start-stop-bg);
+  color: var(--start-stop-text);
+  transition: transform 0.1s ease;
+  outline: none;
+}
+
+.start-stop.start-stop:active {
+  transform: scale(95%);
+  outline: none;
+}
+
+.start-stop.pulse {
+  animation: pulse 0.15s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(105%);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.tempo-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.tempo-value {
+  font-size: 72px;
+  width: 160px;
+  text-align: center;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+  background: none;
+  color: var(--tempo-value-text);
+}
+.tempo-value:focus {
+  outline: 2px solid var(--tempo-value-outline);
+}
+
+.tempo-value::-webkit-outer-spin-button,
+.tempo-value::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.tempo-slider {
+  width: 400px;
+  max-width: 90vw;
+  height: 10px;
+  background: var(--tempo-slider-bg);
+  appearance: none;
+  outline: none;
+  border-radius: 4px;
+}
+
+.tempo-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: var(--tempo-slider-thumb);
+  cursor: pointer;
+}
+
+.tempo-slider::-webkit-slider-thumb:active {
+  transform: scale(110%);
+}
+
+.tempo-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: var(--tempo-slider-thumb);
+  cursor: pointer;
+}
+
+.tempo-slider::-moz-range-thumb:active {
+  transform: scale(110%);
+}
