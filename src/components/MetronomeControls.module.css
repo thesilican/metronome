@@ -1,0 +1,120 @@
+.controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  animation: fade-in 0.25s ease;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.startStop {
+  width: 240px;
+  height: 240px;
+  font-size: 72px;
+  border-radius: 50%;
+  border: none;
+  appearance: none;
+  background-color: var(--secondary);
+  background-size: 100px 100px;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: var(--start-stop-text);
+  transition: transform 0.1s ease;
+  user-select: none;
+}
+
+.startStop.startStop:active {
+  transform: scale(95%);
+}
+
+.startStop.pulse {
+  animation: pulse 0.15s ease;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(105%);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.tempoControls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.tempoValue {
+  font-size: 72px;
+  font-family: "Rubik", sans-serif;
+  width: 160px;
+  text-align: center;
+  border: none;
+  border-radius: 4px;
+  outline: 2px solid transparent;
+  padding: 8px;
+  appearance: textfield;
+  -moz-appearance: textfield;
+  background: none;
+  color: var(--foreground);
+}
+.tempoValue:focus {
+  outline: 2px solid var(--foreground);
+}
+
+.tempoValue::-webkit-outer-spin-button,
+.tempoValue::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.tempoSlider {
+  width: 400px;
+  max-width: 90vw;
+  height: 10px;
+  background: var(--secondary);
+  appearance: none;
+  outline: none;
+  border-radius: 4px;
+}
+
+.tempoSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+}
+
+.tempoSlider::-webkit-slider-thumb:active {
+  transform: scale(110%);
+}
+
+.tempoSlider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.tempoSlider::-moz-range-thumb:active {
+  transform: scale(120%);
+}

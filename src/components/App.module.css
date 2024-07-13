@@ -1,0 +1,73 @@
+.app {
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  gap: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 600px) {
+  .app {
+    width: 600px;
+    margin: auto;
+  }
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  user-select: none;
+}
+
+.tabsRow {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.tabButton {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background-color: unset;
+  background-size: 48px 48px;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: var(--foreground);
+  transition: transform 0.1s ease;
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tabButton:active {
+  transform: scale(90%);
+}
+
+.tabButton.active {
+  background-color: var(--secondary);
+}
+
+.helpButton {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--secondary);
+  background-size: 48px 48px;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: var(--foreground);
+  transition: transform 0.1s ease;
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.helpButton:active {
+  transform: scale(90%);
+}

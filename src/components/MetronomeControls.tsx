@@ -1,5 +1,8 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Metronome } from "./metronome";
+import pauseSvg from "../assets/pause.svg";
+import playSvg from "../assets/play.svg";
+import { Metronome } from "../metronome";
+import styles from "./MetronomeControls.module.css";
 
 const STANDARD_TEMPOS = [
   42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 63, 66, 69, 72, 76, 80, 84, 88, 92,
@@ -11,14 +14,13 @@ const MAX_TEMPO = 999;
 
 const text = localStorage.getItem("metronome-tempo");
 const tempo = text ? parseInt(text, 10) : 120;
-const METRONOME = new Metronome(tempo);
+const metronome = new Metronome(tempo);
 
-export function App() {
+export function MetronomeControls() {
   const startStopRef = useRef<HTMLButtonElement>(null);
   const tempoValueRef = useRef<HTMLInputElement>(null);
   const tempoSliderRef = useRef<HTMLInputElement>(null);
-  const metronomeRef = useRef(METRONOME);
-  const [tempo, setTempo] = useState(metronomeRef.current.tempo);
+  const [tempo, setTempo] = useState(() => metronome.tempo);
   const [playing, setPlaying] = useState(false);
 
   let slider = STANDARD_TEMPOS.length - 1;
@@ -31,17 +33,16 @@ export function App() {
 
   useEffect(() => {
     const startStop = startStopRef.current;
-    const metronome = metronomeRef.current;
     if (!startStop) {
       return;
     }
     const handleAnimationEnd = (e: AnimationEvent) => {
-      if (e.animationName === "pulse") {
-        startStop.classList.remove("pulse");
+      if (e.animationName === styles.pulse) {
+        startStop.classList.remove(styles.pulse);
       }
     };
     const handlePulse = () => {
-      startStop.classList.add("pulse");
+      startStop.classList.add(styles.pulse);
     };
     metronome.addEventListener("pulse", handlePulse);
     startStop.addEventListener("animationend", handleAnimationEnd);
@@ -50,20 +51,19 @@ export function App() {
       metronome.removeEventListener("pulse", handlePulse);
       startStop.removeEventListener("animationend", handleAnimationEnd);
     };
-  }, [startStopRef, metronomeRef]);
+  }, [startStopRef]);
 
   useEffect(() => {
-    metronomeRef.current.setTempo(tempo);
-  }, [metronomeRef, tempo]);
+    metronome.setTempo(tempo);
+  }, [tempo]);
 
   useEffect(() => {
-    const metronome = metronomeRef.current;
     if (playing) {
       metronome.start();
     } else {
       metronome.stop();
     }
-  }, [metronomeRef, playing]);
+  }, [playing]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -98,6 +98,11 @@ export function App() {
         setTempo(
           STANDARD_TEMPOS[Math.min(STANDARD_TEMPOS.length - 1, slider + 1)]
         );
+      } else if (!isNaN(parseInt(e.key))) {
+        if (document.activeElement === tempoValueRef.current) {
+          return;
+        }
+        tempoValueRef.current?.focus();
       }
     };
     window.addEventListener("keydown", handler);
@@ -134,40 +139,40 @@ export function App() {
   };
 
   return (
-    <div className="app">
-      <div className="controls">
-        <div />
-        <button
-          className="start-stop"
-          ref={startStopRef}
-          onClick={handleStartStopChange}
-          tabIndex={-1}
-        >
-          {playing ? "Stop" : "Start"}
-        </button>
-        <div className="tempo-controls" onSubmit={(e) => e.preventDefault()}>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <input
-              className="tempo-value"
-              type="number"
-              ref={tempoValueRef}
-              value={tempo === 0 ? "" : tempo}
-              onFocus={(e) => e.target.select()}
-              onChange={handleTempoInputChange}
-              tabIndex={-1}
-            />
-          </form>
+    <div className={styles.controls}>
+      <button
+        className={styles.startStop}
+        ref={startStopRef}
+        onClick={handleStartStopChange}
+        tabIndex={-1}
+        style={{ backgroundImage: `url("${playing ? pauseSvg : playSvg}")` }}
+      />
+      <div
+        className={styles.tempoControls}
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <form onSubmit={(e) => e.preventDefault()}>
           <input
-            className="tempo-slider"
-            type="range"
-            ref={tempoSliderRef}
-            min={0}
-            max={STANDARD_TEMPOS.length - 1}
-            value={slider}
-            onChange={handleTempoSliderChange}
+            className={styles.tempoValue}
+            type="number"
+            inputMode="numeric"
+            ref={tempoValueRef}
+            value={tempo === 0 ? "" : tempo}
+            onFocus={(e) => e.target.select()}
+            onChange={handleTempoInputChange}
             tabIndex={-1}
           />
-        </div>
+        </form>
+        <input
+          className={styles.tempoSlider}
+          type="range"
+          ref={tempoSliderRef}
+          min={0}
+          max={STANDARD_TEMPOS.length - 1}
+          value={slider}
+          onChange={handleTempoSliderChange}
+          tabIndex={-1}
+        />
       </div>
     </div>
   );

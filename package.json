@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/rubik": "^5.0.20",
     "@types/node": "^20.11.24",
+    "classnames": "^2.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sanitize.css": "^13.0.0"
