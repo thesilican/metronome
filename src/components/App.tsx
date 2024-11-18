@@ -1,11 +1,12 @@
 import questionSvg from "../assets/question.svg";
 import tuningForkSvg from "../assets/tuning-fork.svg";
 import metronomeSvg from "../assets/metronome.svg";
-import { MetronomeControls } from "./MetronomeControls";
+import { MetronomeTab } from "./MetronomeTab";
 import { useState } from "react";
 import styles from "./App.module.css";
-import { TunerControls } from "./TunerControls";
+import { TunerTab } from "./TunerTab";
 import cn from "classnames";
+import { AboutTab } from "./AboutTab";
 
 export function App() {
   const [tab, setTab] = useState(0);
@@ -24,14 +25,16 @@ export function App() {
             style={{ backgroundImage: `url("${tuningForkSvg}")` }}
             onClick={() => setTab(1)}
           />
+          <button
+            className={cn(styles.tabButton, tab === 2 && styles.active)}
+            style={{ backgroundImage: `url("${questionSvg}")` }}
+            onClick={() => setTab(2)}
+          />
         </div>
-        <button
-          className={styles.helpButton}
-          style={{ backgroundImage: `url("${questionSvg}")` }}
-        />
       </div>
-      {tab === 0 && <MetronomeControls />}
-      {tab === 1 && <TunerControls />}
+      {tab === 0 && <MetronomeTab />}
+      {tab === 1 && <TunerTab />}
+      {tab === 2 && <AboutTab />}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import pauseSvg from "../assets/pause.svg";
 import playSvg from "../assets/play.svg";
 import { Metronome } from "../metronome";
-import styles from "./MetronomeControls.module.css";
+import styles from "./MetronomeTab.module.css";
 
 const STANDARD_TEMPOS = [
   42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 63, 66, 69, 72, 76, 80, 84, 88, 92,
@@ -16,7 +16,7 @@ const text = localStorage.getItem("metronome-tempo");
 const tempo = text ? parseInt(text, 10) : 120;
 const metronome = new Metronome(tempo);
 
-export function MetronomeControls() {
+export function MetronomeTab() {
   const startStopRef = useRef<HTMLButtonElement>(null);
   const tempoValueRef = useRef<HTMLInputElement>(null);
   const tempoSliderRef = useRef<HTMLInputElement>(null);

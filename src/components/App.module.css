@@ -52,7 +52,7 @@
   background-color: var(--secondary);
 }
 
-.helpButton {
+/* .helpButton {
   width: 64px;
   height: 64px;
   border-radius: 50%;
@@ -70,4 +70,4 @@
 }
 .helpButton:active {
   transform: scale(90%);
-}
+} */

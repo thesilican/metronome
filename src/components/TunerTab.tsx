@@ -1,6 +1,6 @@
-import styles from "./TunerControls.module.css";
+import styles from "./TunerTab.module.css";
 
-export function TunerControls() {
+export function TunerTab() {
   return (
     <div className={styles.controls}>
       <p>Under construction</p>
