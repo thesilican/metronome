@@ -25,9 +25,6 @@
   border: none;
   appearance: none;
   background-color: var(--secondary);
-  background-size: 100px 100px;
-  background-repeat: no-repeat;
-  background-position: center;
   color: var(--start-stop-text);
   transition: transform 0.1s ease;
   user-select: none;

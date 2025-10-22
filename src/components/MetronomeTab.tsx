@@ -1,6 +1,4 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import pauseSvg from "../assets/pause.svg";
-import playSvg from "../assets/play.svg";
 import { Metronome } from "../metronome";
 import styles from "./MetronomeTab.module.css";
 
@@ -10,10 +8,11 @@ const STANDARD_TEMPOS = [
   192, 200, 208,
 ];
 
+const MIN_TEMPO = 1;
 const MAX_TEMPO = 999;
 
-const text = localStorage.getItem("metronome-tempo");
-const tempo = text ? parseInt(text, 10) : 120;
+const tempoText = localStorage.getItem("metronome-tempo");
+const tempo = tempoText ? parseInt(tempoText, 10) : 120;
 const metronome = new Metronome(tempo);
 
 export function MetronomeTab() {
@@ -21,7 +20,7 @@ export function MetronomeTab() {
   const tempoValueRef = useRef<HTMLInputElement>(null);
   const tempoSliderRef = useRef<HTMLInputElement>(null);
   const [tempo, setTempo] = useState(() => metronome.tempo);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(() => metronome.isPlaying);
 
   let slider = STANDARD_TEMPOS.length - 1;
   for (let i = 0; i < STANDARD_TEMPOS.length; i++) {
@@ -44,26 +43,23 @@ export function MetronomeTab() {
     const handlePulse = () => {
       startStop.classList.add(styles.pulse);
     };
+    const handleExternalPlay = () => {
+      setPlaying(true);
+    };
+    const handleExternalPause = () => {
+      setPlaying(false);
+    };
     metronome.addEventListener("pulse", handlePulse);
+    metronome.addEventListener("externalplay", handleExternalPlay);
+    metronome.addEventListener("externalpause", handleExternalPause);
     startStop.addEventListener("animationend", handleAnimationEnd);
     return () => {
-      metronome.stop();
       metronome.removeEventListener("pulse", handlePulse);
+      metronome.removeEventListener("externalplay", handleExternalPlay);
+      metronome.removeEventListener("externalpause", handleExternalPause);
       startStop.removeEventListener("animationend", handleAnimationEnd);
     };
   }, [startStopRef]);
-
-  useEffect(() => {
-    metronome.setTempo(tempo);
-  }, [tempo]);
-
-  useEffect(() => {
-    if (playing) {
-      metronome.start();
-    } else {
-      metronome.stop();
-    }
-  }, [playing]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -87,7 +83,7 @@ export function MetronomeTab() {
       } else if (e.code === "ArrowDown") {
         e.preventDefault();
         tempoSliderRef.current?.blur();
-        setTempo((tempo) => Math.max(tempo - 1, 1));
+        setTempo((tempo) => Math.max(tempo - 1, MIN_TEMPO));
       } else if (e.code === "ArrowLeft") {
         e.preventDefault();
         tempoSliderRef.current?.blur();
@@ -96,7 +92,7 @@ export function MetronomeTab() {
         e.preventDefault();
         tempoSliderRef.current?.blur();
         setTempo(
-          STANDARD_TEMPOS[Math.min(STANDARD_TEMPOS.length - 1, slider + 1)]
+          STANDARD_TEMPOS[Math.min(STANDARD_TEMPOS.length - 1, slider + 1)],
         );
       } else if (!isNaN(parseInt(e.key))) {
         if (document.activeElement === tempoValueRef.current) {
@@ -112,8 +108,21 @@ export function MetronomeTab() {
   }, [slider]);
 
   useEffect(() => {
-    localStorage.setItem("metronome-tempo", tempo.toString());
+    if (tempo >= MIN_TEMPO && tempo <= MAX_TEMPO) {
+      localStorage.setItem("metronome-tempo", tempo.toString());
+      if (tempo !== metronome.tempo) {
+        metronome.setTempo(tempo);
+      }
+    }
   }, [tempo]);
+
+  useEffect(() => {
+    if (playing && !metronome.isPlaying) {
+      metronome.start();
+    } else if (!playing && metronome.isPlaying) {
+      metronome.stop();
+    }
+  }, [playing]);
 
   const handleStartStopChange = () => {
     setPlaying(!playing);
@@ -145,8 +154,9 @@ export function MetronomeTab() {
         ref={startStopRef}
         onClick={handleStartStopChange}
         tabIndex={-1}
-        style={{ backgroundImage: `url("${playing ? pauseSvg : playSvg}")` }}
-      />
+      >
+        {playing ? pauseSvg : playSvg}
+      </button>
       <div
         className={styles.tempoControls}
         onSubmit={(e) => e.preventDefault()}
@@ -177,3 +187,28 @@ export function MetronomeTab() {
     </div>
   );
 }
+
+const playSvg = (
+  <svg
+    width="100"
+    height="100"
+    viewBox="0 0 60 60"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M8 0L60 30L8 60V0Z" fill="white" />
+  </svg>
+);
+
+const pauseSvg = (
+  <svg
+    width="100"
+    height="100"
+    viewBox="0 0 60 60"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="3" width="18" height="60" fill="white" />
+    <rect x="39" width="18" height="60" fill="white" />
+  </svg>
+);

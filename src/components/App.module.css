@@ -34,9 +34,6 @@
   border-radius: 50%;
   border: none;
   background-color: unset;
-  background-size: 48px 48px;
-  background-repeat: no-repeat;
-  background-position: center;
   color: var(--foreground);
   transition: transform 0.1s ease;
   appearance: none;
@@ -51,23 +48,3 @@
 .tabButton.active {
   background-color: var(--secondary);
 }
-
-/* .helpButton {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--secondary);
-  background-size: 48px 48px;
-  background-repeat: no-repeat;
-  background-position: center;
-  color: var(--foreground);
-  transition: transform 0.1s ease;
-  appearance: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.helpButton:active {
-  transform: scale(90%);
-} */
