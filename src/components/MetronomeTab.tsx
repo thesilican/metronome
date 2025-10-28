@@ -1,5 +1,5 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Metronome } from "../metronome";
+import { Metronome } from "../lib/metronome";
 import styles from "./MetronomeTab.module.css";
 
 const STANDARD_TEMPOS = [
@@ -92,7 +92,7 @@ export function MetronomeTab() {
         e.preventDefault();
         tempoSliderRef.current?.blur();
         setTempo(
-          STANDARD_TEMPOS[Math.min(STANDARD_TEMPOS.length - 1, slider + 1)],
+          STANDARD_TEMPOS[Math.min(STANDARD_TEMPOS.length - 1, slider + 1)]
         );
       } else if (!isNaN(parseInt(e.key))) {
         if (document.activeElement === tempoValueRef.current) {

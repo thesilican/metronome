@@ -7,7 +7,7 @@ export function AboutTab() {
       <p>
         by <a href="https://thesilican.com">Bryan Chen</a>
       </p>
-      <h2 className={styles.header}>Keyboard Controls</h2>
+      <h2>Keyboard Controls</h2>
       <div className={styles.controls}>
         <p>
           <kbd>Space</kbd> - Play/Pause

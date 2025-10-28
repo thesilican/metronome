@@ -2,6 +2,7 @@ html,
 body,
 #root {
   height: 100%;
+  margin: 0px;
 }
 
 :root {
@@ -13,10 +14,20 @@ body,
 
 body {
   font-family: "Rubik", sans-serif;
-  font-size: 16px;
+  font-size: 24px;
   background-color: var(--background);
 }
 
-:where(p) {
+p {
   margin: 0px;
+}
+
+h1 {
+  font-size: 36px;
+  margin: 8px 0px 0px;
+}
+
+h2 {
+  font-size: 30px;
+  margin: 8px 0px 0px;
 }

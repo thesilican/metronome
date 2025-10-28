@@ -1,9 +1,8 @@
-.page {
+.container {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   animation: fade-in 0.25s ease;
 }
 
@@ -17,15 +16,14 @@
 }
 
 .title {
-  font-size: 48px;
+  text-align: center;
+  margin: 0px;
 }
 
-.controls {
-  text-align: left;
+.header {
+  margin: 8px 0px 0px 0px;
 }
 
-.page kbd {
-  padding: 2px 4px;
-  background: var(--secondary);
-  border-radius: 2px;
+.list {
+  margin: 0px;
 }
