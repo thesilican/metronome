@@ -28,7 +28,7 @@ export function AboutTab() {
           <kbd>&#8594;</kbd> - Increase tempo step
         </p>
         <p>
-          <kbd>&#8596;</kbd> - Decrease tempo step
+          <kbd>&#8592;</kbd> - Decrease tempo step
         </p>
       </div>
     </div>
