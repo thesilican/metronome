@@ -1,33 +1,33 @@
 html,
 body,
 #root {
-  height: 100%;
-  margin: 0px;
+	height: 100%;
+	margin: 0px;
 }
 
 :root {
-  --background: #1e1e1e;
-  --secondary: #565a5e;
-  --foreground: #fff;
-  --blue: #2d81ff;
+	--background: #1e1e1e;
+	--secondary: #565a5e;
+	--foreground: #fff;
+	--blue: #2d81ff;
 }
 
 body {
-  font-family: "Rubik", sans-serif;
-  font-size: 24px;
-  background-color: var(--background);
+	font-family: "Rubik", sans-serif;
+	font-size: 24px;
+	background-color: var(--background);
 }
 
 p {
-  margin: 0px;
+	margin: 0px;
 }
 
 h1 {
-  font-size: 36px;
-  margin: 8px 0px 0px;
+	font-size: 36px;
+	margin: 8px 0px 0px;
 }
 
 h2 {
-  font-size: 30px;
-  margin: 8px 0px 0px;
+	font-size: 30px;
+	margin: 8px 0px 0px;
 }

@@ -1,168 +1,169 @@
-let baseUrl = import.meta.env.BASE_URL ?? "/";
-if (!baseUrl.endsWith("/")) {
-  baseUrl += "/";
-}
-const clickUrl = new URL(`${baseUrl}click.mp3`, window.location.href);
+import clickUrl from "../assets/click.wav";
+
 const clickAudioData = fetch(clickUrl);
 
 export class Metronome extends EventTarget {
-  private audioContext: AudioContext | undefined;
-  private audioElement: HTMLAudioElement | undefined;
-  private audioBuffer: AudioBuffer | undefined;
-  private destination: MediaStreamAudioDestinationNode | undefined;
-  private timeout: NodeJS.Timeout | null = null;
-  private startTime = 0;
-  private scheduled = new Map<number, [AudioBufferSourceNode, () => void]>();
-  private scheduledMax = -1;
+	private ctx: AudioContext | undefined;
+	private audioElement: HTMLAudioElement | undefined;
+	private clickBuffer: AudioBuffer | undefined;
+	private clickTrack: AudioBufferSourceNode | undefined;
+	private clickGain: GainNode | undefined;
+	private destination: MediaStreamAudioDestinationNode | undefined;
+	private tempo: number;
 
-  private _tempo: number;
-  get tempo() {
-    return this._tempo;
-  }
+	getTempo() {
+		return this.tempo;
+	}
 
-  get isPlaying() {
-    return this.timeout !== null;
-  }
+	isPlaying() {
+		return this.audioElement && !this.audioElement.paused;
+	}
 
-  constructor(tempo: number = 120) {
-    super();
-    this._tempo = tempo;
-  }
+	constructor(tempo: number = 120) {
+		super();
+		this.tempo = tempo;
+	}
 
-  private async init() {
-    const audioContext = new AudioContext();
-    this.audioContext = audioContext;
-    this.audioContext.addEventListener("statechange", () => {
-      if (["interrupted", "suspended"].includes(this.audioContext!.state)) {
-        if (this.timeout !== null) {
-          this.stop();
-          this.dispatchEvent(new Event("externalpause"));
-        }
-      }
-    });
+	private async init() {
+		const ctx = new AudioContext();
+		ctx.addEventListener("statechange", () => {
+			if (["interrupted", "suspended"].includes(ctx.state)) {
+				this.stop();
+			}
+		});
+		this.ctx = ctx;
 
-    const destination = audioContext.createMediaStreamDestination();
-    this.destination = destination;
+		const destination = ctx.createMediaStreamDestination();
+		this.destination = destination;
 
-    const audioElement = document.createElement("audio");
-    document.body.appendChild(audioElement);
-    audioElement.srcObject = destination.stream;
-    audioElement.addEventListener("play", () => {
-      if (this.timeout === null) {
-        this.start();
-        this.dispatchEvent(new Event("externalplay"));
-      }
-    });
-    audioElement.addEventListener("pause", () => {
-      if (this.timeout !== null) {
-        this.stop();
-        this.dispatchEvent(new Event("externalpause"));
-      }
-    });
-    this.audioElement = audioElement;
+		const audioElement = document.createElement("audio");
+		document.body.appendChild(audioElement);
+		audioElement.srcObject = destination.stream;
+		audioElement.loop = true;
+		audioElement.addEventListener("play", () => {
+			if (!this.isPlaying()) {
+				this.start();
+			}
+			this.dispatchEvent(new Event("play"));
+		});
+		audioElement.addEventListener("pause", () => {
+			if (this.isPlaying()) {
+				this.stop();
+			}
+			this.dispatchEvent(new Event("pause"));
+		});
+		this.audioElement = audioElement;
 
-    const data = await (await clickAudioData).arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(data);
-    this.audioBuffer = audioBuffer;
-  }
+		const data = await (await clickAudioData).arrayBuffer();
+		this.clickBuffer = await ctx.decodeAudioData(data);
+	}
 
-  async start() {
-    let bigDelay = this.audioContext === undefined;
-    if (this.audioContext === undefined) {
-      await this.init();
-    }
-    // Resume if interrupted
-    if (["interrupted", "suspended"].includes(this.audioContext!.state)) {
-      bigDelay = true;
-      this.audioContext!.resume();
-    }
-    this.audioElement?.play();
+	async start() {
+		if (!this.ctx) {
+			await this.init();
+		}
+		const ctx = this.ctx;
+		const audioElement = this.audioElement;
+		if (!audioElement || !ctx) {
+			throw new Error("uninitialized");
+		}
 
-    // Stop existing timeout
-    if (this.timeout !== null) {
-      clearInterval(this.timeout);
-    }
-    // Clear existing scheduled audio clicks
-    for (const [source, callback] of this.scheduled.values()) {
-      source.removeEventListener("ended", callback);
-      source.stop();
-      source.disconnect();
-    }
-    this.scheduled.clear();
-    this.scheduledMax = -1;
+		// Resume if interrupted
+		if (["interrupted", "suspended"].includes(ctx.state)) {
+			ctx.resume();
+		}
+		this.setClickTrack(this.tempo);
+		await audioElement.play();
+	}
 
-    // Schedule ticks, delay start time by a few ms to prevent audio popping artifact
-    this.startTime = this.audioContext!.currentTime + (bigDelay ? 0.3 : 0.1);
-    this.scheduleTicks();
-    this.timeout = setInterval(this.scheduleTicks, 1000);
-  }
+	async stop() {
+		if (!this.ctx) {
+			await this.init();
+		}
+		const audioElement = this.audioElement;
+		if (!audioElement) {
+			throw new Error("uninitialized");
+		}
 
-  stop() {
-    this.audioElement?.pause();
+		audioElement.pause();
+		await this.removeClickTrack();
+	}
 
-    // Clear timeout
-    if (this.timeout !== null) {
-      clearTimeout(this.timeout);
-    }
-    this.timeout = null;
+	async setTempo(tempo: number) {
+		if (!this.ctx) {
+			await this.init();
+		}
+		const ctx = this.ctx;
+		const destination = this.destination;
+		if (!ctx || !destination) {
+			throw new Error("uninitialized");
+		}
 
-    // Clear existing scheduled audio clicks
-    for (const [source, callback] of this.scheduled.values()) {
-      source.removeEventListener("ended", callback);
-      source.stop();
-      source.disconnect();
-    }
-    this.scheduled.clear();
-    this.scheduledMax = -1;
-  }
+		if (this.isPlaying()) {
+			await this.removeClickTrack();
+			this.tempo = tempo;
+			this.setClickTrack(this.tempo);
+		} else {
+			this.tempo = tempo;
+		}
+	}
 
-  async setTempo(tempo: number) {
-    const running = this.timeout !== null;
-    if (running) {
-      // Clear existing scheduled audio clicks
-      for (const [source, callback] of this.scheduled.values()) {
-        source.removeEventListener("ended", callback);
-        source.stop();
-        source.disconnect();
-      }
-      this.scheduled.clear();
-      this.scheduledMax = -1;
-      this._tempo = tempo;
-      // Set start time in the future with small delay
-      this.startTime = this.audioContext!.currentTime + 0.5;
-      this.scheduleTicks();
-    } else {
-      this._tempo = tempo;
-    }
-  }
+	private setClickTrack(tempo: number) {
+		if (this.clickTrack) {
+			return;
+		}
 
-  private scheduleTicks = () => {
-    const audioContext = this.audioContext!;
-    const currentTime = audioContext.currentTime;
-    const period = 60 / this._tempo;
-    const nextTick = Math.ceil(
-      Math.max(0, (currentTime - this.startTime) / period)
-    );
+		const ctx = this.ctx;
+		const clickBuffer = this.clickBuffer;
+		const destination = this.destination;
+		if (!clickBuffer || !ctx || !destination) {
+			throw new Error("uninitialized");
+		}
 
-    // Schedule 100 audio clicks in the future, should keep up
-    // as long as tempo < 6000bpm
-    for (let i = 0; i < 100; i++) {
-      const tick = nextTick + i;
-      if (tick <= this.scheduledMax || this.scheduled.has(tick)) {
-        continue;
-      }
-      this.scheduledMax = Math.max(tick, this.scheduledMax);
-      const scheduledTime = this.startTime + tick * period;
-      const source = audioContext.createBufferSource();
-      source.buffer = this.audioBuffer!;
-      source.connect(this.destination!);
-      source.start(scheduledTime);
-      const callback = () => {
-        this.scheduled.delete(tick);
-        this.dispatchEvent(new Event("pulse"));
-      };
-      source.addEventListener("ended", callback);
-      this.scheduled.set(tick, [source, callback]);
-    }
-  };
+		const sampleRate = clickBuffer.sampleRate;
+		const clickArray = clickBuffer.getChannelData(0);
+
+		// We want the audio buffer to last 1 minute
+		// Thus if the tempo is 60bpm, we want 60 clicks
+		// If the tempo is 120bpm, we want 120 clicks
+		const numClicks = Math.round(tempo);
+		const length = Math.round((numClicks * sampleRate * 60) / tempo);
+		const outputBuffer = ctx.createBuffer(1, length, sampleRate);
+		for (let i = 0; i < numClicks; i++) {
+			const offset = Math.round((i * sampleRate * 60) / tempo);
+			outputBuffer.copyToChannel(clickArray, 0, offset);
+		}
+
+		const clickGain = ctx.createGain();
+		clickGain.connect(destination);
+		this.clickGain = clickGain;
+
+		const clickTrack = ctx.createBufferSource();
+		clickTrack.buffer = outputBuffer;
+		clickTrack.loop = true;
+		clickTrack.connect(clickGain);
+		this.clickTrack = clickTrack;
+
+		clickTrack.start(ctx.currentTime + 0.1);
+	}
+
+	private async removeClickTrack() {
+		const ctx = this.ctx;
+		if (!ctx) {
+			throw new Error("uninitialized");
+		}
+
+		if (this.clickTrack && this.clickGain) {
+			const clickTrack = this.clickTrack;
+			const clickGain = this.clickGain;
+			this.clickTrack = undefined;
+			this.clickGain = undefined;
+			// Shut off value
+			const now = ctx.currentTime;
+			clickGain.gain.linearRampToValueAtTime(0, now + 0.01);
+			await new Promise((res) => setTimeout(res, 100));
+			clickTrack.stop();
+			clickTrack.disconnect();
+		}
+	}
 }

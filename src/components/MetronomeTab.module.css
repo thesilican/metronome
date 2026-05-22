@@ -4,8 +4,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 64px;
+  gap: 32px;
   animation: fade-in 0.25s ease;
+  user-select: none;
 }
 
 @keyframes fade-in {
@@ -27,24 +28,16 @@
   background-color: var(--secondary);
   color: var(--start-stop-text);
   transition: transform 0.1s ease;
-  user-select: none;
+  outline: none;
 }
 
+.startStop.playing {
+  box-shadow: 0px 2px 16px 0px #fff2;
+}
+
+.startStop.space,
 .startStop.startStop:active {
   transform: scale(95%);
-}
-
-.startStop.pulse {
-  animation: pulse 0.15s ease;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(105%);
-  }
-  100% {
-    transform: none;
-  }
 }
 
 .tempoControls {
@@ -60,16 +53,21 @@
   width: 160px;
   text-align: center;
   border: none;
-  border-radius: 4px;
-  outline: 2px solid transparent;
-  padding: 8px;
+  border-radius: 16px;
+  outline: none;
+  padding: 12px 6px;
   appearance: textfield;
   -moz-appearance: textfield;
   background: none;
   color: var(--foreground);
+  transition: outline 0.1s ease;
+  caret-color: transparent;
 }
-.tempoValue:focus {
-  outline: 2px solid var(--foreground);
+.tempoValue:focus-within {
+  text-shadow: 0px 0px 8px #fff;
+}
+.tempoValue::selection {
+  background: none;
 }
 
 .tempoValue::-webkit-outer-spin-button,
