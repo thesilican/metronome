@@ -1,4 +1,4 @@
-FROM node:lts AS builder
+FROM node:24.15 AS builder
 
 WORKDIR /root
 ARG BASE_URL /
